@@ -22,6 +22,7 @@
   .btn-audio { background:#2196F3; }
   .player { margin:10px; text-align:center; }
   .player video, .player audio { width:100%; border-radius:5px; }
+  .mobile-note { font-size:0.85em; color:#555; text-align:center; margin-bottom:5px; }
 </style>
 </head>
 <body>
@@ -38,6 +39,7 @@
 <div id="results"></div>
 
 <div class="player" id="player"></div>
+<p class="mobile-note">Sur mobile, cliquez sur play pour activer le son si nécessaire.</p>
 
 <script>
 // Pixabay API pour vidéos libres
@@ -80,10 +82,10 @@ async function rechercher() {
   }
 }
 
-// Lecture vidéo intégrée
+// Lecture vidéo intégrée avec audio activé
 function playVideo(url) {
   const playerDiv = document.getElementById("player");
-  playerDiv.innerHTML = `<video src="${url}" controls autoplay></video>`;
+  playerDiv.innerHTML = `<video src="${url}" controls autoplay muted="false"></video>`;
 }
 
 // Lecture audio intégrée
