@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Israël Song</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f9f9f9; }
+  header { background:#1a1a1a; color:white; padding:15px; text-align:center; }
+  header h1 { margin:0; font-size:1.5em; }
+  .search-bar { display:flex; padding:10px; gap:5px; }
+  .search-bar input { flex:1; padding:10px; border-radius:5px; border:1px solid #ccc; font-size:1em; }
+  .search-bar button { padding:10px 15px; border:none; border-radius:5px; background:#4CAF50; color:white; cursor:pointer; font-size:1em; }
+  #results { display:flex; flex-direction:column; gap:8px; margin:10px; }
+  .video-item { display:flex; gap:10px; align-items:center; background:white; padding:8px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.2); cursor:pointer; }
+  .video-item img { width:80px; height:60px; object-fit:cover; border-radius:5px; }
+  .video-info { flex:1; display:flex; flex-direction:column; gap:3px; }
+  .video-info h3 { margin:0; font-size:0.95em; color:#333; }
+  .buttons { display:flex; gap:5px; margin-top:3px; }
+  .buttons button { flex:1; padding:5px; font-size:0.85em; border:none; border-radius:5px; color:white; cursor:pointer; }
+  .btn-video { background:#25D366; }
+  .btn-audio { background:#2196F3; }
+  .player { margin:10px; text-align:center; }
+  .player video, .player audio { width:100%; border-radius:5px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Israël Song</h1>
+</header>
+
+<div class="search-bar">
+  <input type="text" id="query" placeholder="Rechercher vidéo/audio">
+  <button onclick="rechercher()">Rechercher</button>
+</div>
+
+<div id="results"></div>
+
+<div class="player" id="player"></div>
+
+<script>
+// Pixabay API pour vidéos libres
+async function rechercher() {
+  const query = document.getElementById("query").value.trim();
+  const resultsDiv = document.getElementById("results");
+  const playerDiv = document.getElementById("player");
+  playerDiv.innerHTML = "";
+  resultsDiv.innerHTML = "<p>Recherche en cours...</p>";
+
+  if (!query) { resultsDiv.innerHTML = "<p>Veuillez entrer un mot-clé.</p>"; return; }
+
+  try {
+    const apiKey = "51889683-63f88bf4e92457d735e486840"; // Ta clé Pixabay
+    const url = `https://pixabay.com/api/videos/?key=${apiKey}&q=${encodeURIComponent(query)}&per_page=15`;
+    const response = await fetch(url);
+    const data = await response.json();
+
+    resultsDiv.innerHTML = "";
+    if (data.hits.length === 0) { resultsDiv.innerHTML = "<p>Aucun résultat trouvé.</p>"; return; }
+
+    data.hits.forEach(video => {
+      const div = document.createElement("div");
+      div.className = "video-item";
+      div.innerHTML = `
+        <img src="${video.userImageURL}" alt="Miniature" onclick="playVideo('${video.videos.medium.url}')">
+        <div class="video-info">
+          <h3>${video.tags}</h3>
+          <div class="buttons">
+            <button class="btn-video" onclick="playVideo('${video.videos.medium.url}')">Vidéo</button>
+            <button class="btn-audio" onclick="playAudio('${video.videos.medium.url}')">Audio</button>
+          </div>
+        </div>
+      `;
+      resultsDiv.appendChild(div);
+    });
+  } catch(err) {
+    console.error(err);
+    resultsDiv.innerHTML = "<p>Erreur lors de la recherche.</p>";
+  }
+}
+
+// Lecture vidéo intégrée
+function playVideo(url) {
+  const playerDiv = document.getElementById("player");
+  playerDiv.innerHTML = `<video src="${url}" controls autoplay></video>`;
+}
+
+// Lecture audio intégrée
+function playAudio(url) {
+  const playerDiv = document.getElementById("player");
+  playerDiv.innerHTML = `<audio src="${url}" controls autoplay></audio>`;
+}
+</script>
+
+</body>
+</html>
